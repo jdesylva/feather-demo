@@ -9,6 +9,7 @@
  * member) at the local, and you've found our code helpful, 
  * please buy us a round!
  * Distributed as-is; no warranty is given.
+ * 
  */
 #include <lorawan.h>
 
