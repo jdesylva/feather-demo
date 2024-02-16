@@ -14,7 +14,7 @@
 #include <lorawan.h>
 
 // OTAA credentials
-const char *devEui = "212781276C01F3F0";
+const char *devEui = "DF625857C791302F";
 const char *appEui = "0000000000000001";
 const char *appKey = "0001020304D5B3700001020304D5B370";
 
@@ -44,6 +44,8 @@ void setup() {
     delay(5000);
     return;
   }
+
+  randomSeed(analogRead(0)); 
 
   // Set LoRaWAN Class change CLASS_A or CLASS_C
   lora.setDeviceClass(CLASS_A);
@@ -75,14 +77,23 @@ void loop() {
   // Check interval overflow
   if(millis() - previousMillis > interval) {
     previousMillis = millis(); 
-
-    sprintf(myStr, "Counter-%d", counter); 
-
+    int CPUTemp = analogReadTemp();
+    sprintf(myStr, "CPUTemp = %d", CPUTemp); 
     Serial.print("Sending: ");
     Serial.println(myStr);
-    // void sendUplink(char *data, unsigned int len, unsigned char confirm, unsigned char mport);
-    lora.sendUplink(myStr, strlen(myStr), 0, 1);
-    counter++;
+    // Initialiser la trame à 0
+    char data[12] = {0};
+    // Initialiser la tension à 3 Vdc
+    data[0] = 1;
+    data[1] = 0x4D;
+    // Insérer la valeur de la température du CPU
+    data[2] = (CPUTemp*100) >> 8;
+    data[3] = (CPUTemp*100) & 0x00FF;
+    data[4] = 0;
+    data[5] = (15 + random(10)) * 10;
+    lora.sendUplink(data, 12, 0, 1);
+    //lora.sendUplink(data, strlen(myStr), 0, 1);
+    //counter++;
   }
 
   recvStatus = lora.readData(outStr);
