@@ -38,7 +38,7 @@ const sRFM_pins RFM_pins = {
 void setup() {
   // Setup loraid access
   Serial.begin(9600);
-  while(!Serial);
+
   if(!lora.init()){
     Serial.println("RFM95 not detected");
     delay(5000);
@@ -92,8 +92,6 @@ void loop() {
     data[4] = 0;
     data[5] = (15 + random(10)) * 10;
     lora.sendUplink(data, 12, 0, 1);
-    //lora.sendUplink(data, strlen(myStr), 0, 1);
-    //counter++;
   }
 
   recvStatus = lora.readData(outStr);
